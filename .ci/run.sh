@@ -76,6 +76,9 @@ case "${CI_JOB}" in
 		echo "INFO: Running metrics tests"
 		sudo -E PATH="$PATH" ".ci/run_metrics_PR_ci.sh"
 		;;
+	"VIRTIOFS_EXPERIMENTAL")
+		sudo -E PATH="$PATH" bash -c "make filesystem"
+		;;
 	*)
 		echo "INFO: Running checks"
 		sudo -E PATH="$PATH" bash -c "make check"

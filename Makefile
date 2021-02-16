@@ -219,6 +219,9 @@ ipv6:
 pmem:
 	bash -f integration/pmem/pmem_test.sh
 
+filesystem:
+	bash -f ./conformance/posixfs/fstests.sh
+
 test: ${UNION}
 
 check: checkcommits log-parser
@@ -246,6 +249,7 @@ help:
 	docker-compose \
 	docker-stability \
 	entropy \
+	filesystem \
 	ginkgo \
 	$(INSTALL_TARGETS) \
 	podman \

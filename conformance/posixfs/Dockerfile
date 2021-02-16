@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Usage: FROM [image name]
-FROM debian
+FROM quay.io/jitesoft/debian
 
 # Version of the Dockerfile
 LABEL DOCKERFILE_VERSION="1.0"
