@@ -21,9 +21,14 @@ CURRENT_QEMU_TAG=$(get_version "assets.hypervisor.qemu-experimental.tag")
 PACKAGING_DIR="${kata_repo_dir}/tools/packaging"
 QEMU_TAR="kata-static-qemu-virtiofsd.tar.gz"
 arch=$("${cidir}"/kata-arch.sh -d)
-QEMU_PATH="/opt/kata/bin/qemu-virtiofs-system-x86_64"
-VIRTIOFS_PATH="/opt/kata/bin/virtiofsd"
 qemu_experimental_latest_build_url="${jenkins_url}/job/qemu-experimental-nightly-$(uname -m)/${cached_artifacts_path}"
+
+bindir="${DESTDIR:-}/usr/bin"
+
+QEMU_PATH="/opt/kata/bin/qemu-virtiofs-system-x86_64"
+DEST_QEMU_PATH="${bindir}/qemu-system-$(uname -m)"
+VIRTIOFSD_PATH="${DESTDIR:-}/opt/kata/bin/virtiofsd-experimental"
+DEST_VIRTIOFSD_PATH="${bindir}/virtiofsd"
 
 uncompress_experimental_qemu() {
 	local qemu_tar_location="$1"
@@ -37,8 +42,6 @@ install_cached_qemu_experimental() {
 	curl -fsOL "${qemu_experimental_latest_build_url}/sha256sum-${QEMU_TAR}" || return 1
 	sha256sum -c "sha256sum-${QEMU_TAR}" || return 1
 	uncompress_experimental_qemu "${QEMU_TAR}"
-	sudo -E ln -sf "${QEMU_PATH}" "/usr/bin"
-	sudo -E ln -sf "${VIRTIOFS_PATH}" "/usr/bin"
 	sudo mkdir -p "${KATA_TESTS_CACHEDIR}"
 	sudo mv "${QEMU_TAR}" "${KATA_TESTS_CACHEDIR}"
 }
@@ -46,8 +49,6 @@ install_cached_qemu_experimental() {
 build_and_install_static_experimental_qemu() {
 	build_experimental_qemu
 	uncompress_experimental_qemu "${KATA_TESTS_CACHEDIR}/${QEMU_TAR}"
-	sudo -E ln -sf "${QEMU_PATH}" "/usr/bin"
-	sudo -E ln -sf "${VIRTIOFS_PATH}" "/usr/bin"
 }
 
 build_experimental_qemu() {
@@ -70,6 +71,9 @@ main() {
 	else
 		build_and_install_static_experimental_qemu
 	fi
+	info "Symlink experimental qemu to default qemu path"
+	sudo -E ln -sf "${QEMU_PATH}" "${DEST_QEMU_PATH}"
+	sudo -E ln -sf "${VIRTIOFSD_PATH}" "${DEST_VIRTIOFSD_PATH}"
 }
 
 main
